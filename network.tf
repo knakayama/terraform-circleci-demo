@@ -74,6 +74,25 @@ resource "aws_route_table" "application_subnet" {
   }
 }
 
+resource "aws_vpc_endpoint" "vpc_endpoint" {
+  vpc_id          = "${aws_vpc.vpc.id}"
+  service_name    = "com.amazonaws.ap-northeast-1.s3"
+  route_table_ids = ["${aws_route_table.application_subnet.*.id}"]
+
+  policy = <<EOT
+{
+  "Statement": [
+    {
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "*",
+      "Principal": "*"
+    }
+  ]
+}
+EOT
+}
+
 resource "aws_route_table_association" "application_subnet" {
   count          = 2
   subnet_id      = "${element(aws_subnet.application_subnet.*.id, count.index)}"
