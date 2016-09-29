@@ -2,7 +2,7 @@ machine:
   environment:
     S3_BUCKET: terraform-circleci-demo
     AWS_DEFAULT_REGION: ap-northeast-1
-    TERRAFORM_VER: 0.7.0
+    TERRAFORM_VER: 0.7.4
 
 dependencies:
   override:

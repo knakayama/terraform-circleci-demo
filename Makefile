@@ -1,4 +1,4 @@
-BUCKET_NAME = terraform-circleci-demo-tfstate
+BUCKET_NAME = terraform-circleci-demo
 REGION = ap-northeast-1
 CD = [ -d envs/${ENV} ] && cd envs/${ENV}
 ENV = $1
