@@ -3,6 +3,7 @@ machine:
     S3_BUCKET: terraform-circleci-demo
     AWS_DEFAULT_REGION: ap-northeast-1
     TERRAFORM_VER: 0.7.4
+    PATH: $PATH:$HOME/.local/bin:$HOME/bin
 
 dependencies:
   override:
@@ -21,36 +22,26 @@ dependencies:
 test:
   override:
     - |
-      if [[ "${CIRCLE_BRANCH}" =~ (release/)?dev/? ]]; then
+      if [[ "$CIRCLE_BRANCH" =~ (release/)?staging/? ]]; then
         make remote-enable ENV=dev
         make terraform ENV=dev ARGS="get -update"
         make terraform ENV=dev ARGS=plan
-      elif [[ "${CIRCLE_BRANCH}" =~ (release/)?stg/? ]]; then
-        make remote-enable ENV=stg
-        make terraform ENV=stg ARGS="get -update"
-        make terraform ENV=stg ARGS=plan
-      elif [[ "${CIRCLE_BRANCH}" =~ (release/)?prd/?|master ]]; then
+      elif [[ "$CIRCLE_BRANCH" =~ (release/)?production/?|master ]]; then
         make remote-enable ENV=prd
         make terraform ENV=prd ARGS="get -update"
         make terraform ENV=prd ARGS=plan
       fi
 
 deployment:
-  development:
-    branch: release/dev
-    commands:
-      - make terraform ENV=dev ARGS="get -update"
-      - make terraform ENV=dev ARGS=apply
-      - make terraform ENV=dev ARGS="remote push"
   staging:
-    branch: release/stg
+    branch: release/staging
     commands:
-      - make terraform ENV=stg ARGS="get -update"
-      - make terraform ENV=stg ARGS=apply
-      - make terraform ENV=stg ARGS="remote push"
+      - make terraform ENV=staging ARGS="get -update"
+      - make terraform ENV=staging ARGS=apply
+      - make terraform ENV=staging ARGS="remote push"
   production:
-    branch: release/prd
+    branch: release/production
     commands:
-      - make terraform ENV=prd ARGS="get -update"
-      - make terraform ENV=prd ARGS=apply
-      - make terraform ENV=prd ARGS="remote push"
+      - make terraform ENV=production ARGS="get -update"
+      - make terraform ENV=production ARGS=apply
+      - make terraform ENV=production ARGS="remote push"
